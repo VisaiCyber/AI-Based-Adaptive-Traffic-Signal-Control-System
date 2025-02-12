@@ -11,7 +11,8 @@ from ultralytics.utils import ASSETS, WEIGHTS_DIR, checks
 from ultralytics.utils.torch_utils import TORCH_1_9
 
 # Constants
-TASK_MODEL_DATA = [(task, WEIGHTS_DIR / TASK2MODEL[task], TASK2DATA[task]) for task in TASKS]
+TASK_MODEL_DATA = [(task, WEIGHTS_DIR / TASK2MODEL[task],
+                    TASK2DATA[task]) for task in TASKS]
 MODELS = [WEIGHTS_DIR / TASK2MODEL[task] for task in TASKS]
 
 
@@ -78,13 +79,16 @@ def test_fastsam(task="segment", model=WEIGHTS_DIR / "FastSAM-s.pt", data="coco8
 
     # Run inference on an image
     for s in (source, Image.open(source)):
-        everything_results = sam_model(s, device="cpu", retina_masks=True, imgsz=320, conf=0.4, iou=0.9)
+        everything_results = sam_model(
+            s, device="cpu", retina_masks=True, imgsz=320, conf=0.4, iou=0.9)
 
         # Remove small regions
-        new_masks, _ = Predictor.remove_small_regions(everything_results[0].masks.data, min_area=20)
+        new_masks, _ = Predictor.remove_small_regions(
+            everything_results[0].masks.data, min_area=20)
 
         # Run inference with bboxes and points and texts prompt at the same time
-        sam_model(source, bboxes=[439, 437, 524, 709], points=[[200, 200]], labels=[1], texts="a photo of a dog")
+        sam_model(source, bboxes=[439, 437, 524, 709], points=[
+                  [200, 200]], labels=[1], texts="a photo of a dog")
 
 
 def test_mobilesam():
@@ -115,4 +119,5 @@ def test_mobilesam():
 def test_train_gpu(task, model, data):
     """Test YOLO training on GPU(s) for various tasks and models."""
     run(f"yolo train {task} model={model} data={data} imgsz=32 epochs=1 device=0")  # single GPU
-    run(f"yolo train {task} model={model} data={data} imgsz=32 epochs=1 device=0,1")  # multi GPU
+    # multi GPU
+    run(f"yolo train {task} model={model} data={data} imgsz=32 epochs=1 device=0,1")
